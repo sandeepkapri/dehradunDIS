@@ -1,0 +1,86 @@
+.admin-panel-1{
+}
+
+.admin-panel-1-card{
+  height: 98%;
+  border-radius: 5px;
+  margin: 2px;
+}
+
+.admin-panel-1-card-body{
+  padding: 10px;
+}
+.admin-panel-2-card{
+  height: 98%;
+  border-radius: 5px;
+  margin: 2px;
+}
+
+.admin-panel-2-card-body{
+  padding: 10px;
+  height: 100%;
+}
+
+.admin-table-container{
+  overflow: auto;
+  height: 480px;
+}
+.admin-panel-3-card{
+  height: 98%;
+  border-radius: 5px;
+  margin: 2px;
+  color: white;
+}
+
+.admin-panel-3-card-body{
+  padding: 10px;
+  overflow: auto;
+  background-color: white;
+  color: black;
+
+}
+
+#uid-select{
+  color: black;
+}
+
+#admin-uid-label{
+  margin: 5px;
+}
+
+#admin-open-editor-button{
+  margin-top: 10px;
+  position: absolute;
+  right: 10px;
+  border-radius: 5px;
+}
+
+.record-unavailable-alert{
+  border-radius: 5px;
+  height: 45px;
+}
+
+#admin-uid-h1{
+
+}
+
+#admin-save-changes-button{
+  border-radius: 5px;
+}
+
+#admin-alert-modal{
+
+}
+
+#admin-show-dataset-button{
+  border-radius: 5px;
+  position: absolute;
+  bottom: 10px;
+  width: 93%;
+}
+
+.admin-existing-details-container{
+  overflow: auto;
+  height: 490px;
+  font-size: small;
+}

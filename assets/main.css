@@ -1,0 +1,266 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+}
+
+.mainbody {
+  height: 100vh;
+
+}
+
+.mainheader {
+  height: 70px;
+  background-color: #E5E5F7;
+  opacity: 1;
+  background-image:  linear-gradient(30deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(150deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(30deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(150deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(60deg, #f4f4f477 25%, transparent 25.5%, transparent 75%, #f4f4f477 75%, #f4f4f477), linear-gradient(60deg, #f4f4f477 25%, transparent 25.5%, transparent 75%, #f4f4f477 75%, #f4f4f477);
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+}
+
+.navlinks {
+  height: 40px;
+  background-color: #E5E5F7;
+  opacity: 1;
+  background-image:  linear-gradient(30deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(150deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(30deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(150deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(60deg, #f4f4f477 25%, transparent 25.5%, transparent 75%, #f4f4f477 75%, #f4f4f477), linear-gradient(60deg, #f4f4f477 25%, transparent 25.5%, transparent 75%, #f4f4f477 75%, #f4f4f477);
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+
+}
+
+.mainarea {
+  height: 84.9%;
+}
+
+.mainarea-sidebar{
+  color: black;
+  height: 100%;
+}
+
+.mainarea-mapview{
+  color: black;
+  height: 100%;
+}
+
+.mainarea-map{
+  color: black;
+  height: 100%;
+}
+
+
+.mainarea-details{
+  color: black;
+  height: 100%;
+}
+
+
+.navbar-brand{
+  font-weight: bolder;
+  color: black;
+  padding-top: 15px;
+  padding-left: 30px;
+}
+
+.navbar-brand-bar{
+  width: 60%;
+  float: left;
+  height: 70px;
+  background-color: #E5E5F7;
+  opacity: 1;
+  background-image:  linear-gradient(30deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(150deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(30deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(150deg, #f4f4f4 12%, transparent 12.5%, transparent 87%, #f4f4f4 87.5%, #f4f4f4), linear-gradient(60deg, #f4f4f477 25%, transparent 25.5%, transparent 75%, #f4f4f477 75%, #f4f4f477), linear-gradient(60deg, #f4f4f477 25%, transparent 25.5%, transparent 75%, #f4f4f477 75%, #f4f4f477);
+  background-size: 40px 70px;
+  background-position: 0 0, 0 0, 20px 35px, 20px 35px, 0 0, 20px 35px;
+}
+
+.navbar-logo-bar{
+  width: 30%;
+  position: absolute;
+  right: 20px;
+}
+
+.navbar-logo{
+  padding-top: 7px;
+  height: 60px;
+  float: right;
+}
+
+.navlinkbuttongroup{
+  width: 80%;
+  height: 40px;
+  left: 10%;
+  right: 10%;
+
+}
+
+.navlinkbutton{
+  font-size: medium;
+  width: 5%;
+}
+
+.navlinkbutton-start{
+  font-size: medium;
+  width: 5%;
+  border-top-left-radius: 10px;
+}
+
+.navlinkbutton-end{
+  font-size: medium;
+  width: 5%;
+  border-top-right-radius: 10px;
+}
+
+.navlinkbutton-logout{
+  font-size: medium;
+  width: 2px;
+  border-top-right-radius: 10px;
+}
+
+.text404{
+  width: 100%;
+  color: black;
+  text-align: center;
+  padding-top: 30px;
+  font-size: 300%;
+}
+
+.image404{
+  height: 500px;
+}
+
+.box404{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+}
+
+.desc404{
+  color: black;
+  text-align: center;
+  font-size: large;
+}
+
+.loginform{
+  width: 30%;
+  margin-left: 35%;
+  margin-right: 25%;
+  margin-top: 5%;
+  height: 350px;
+}
+
+.submitbutton{
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+.map-first-page{
+  width: 100%;
+  height: 100%;
+}
+
+.search-overlay{
+  width: 300px;
+  background-color: white;
+  z-index: 10;
+  position: absolute;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.search-button{
+  width: 100%;
+  text-align: left;
+  color: white;
+  font-size: large;
+}
+
+.searchbox{
+  padding: 0;
+}
+.search-combobox{
+  margin: 5px;
+  color: black;
+  margin-left: 20px;
+  width: 240px;
+}
+#search-icon{
+  margin-left: 10px;
+  margin-top: 7px;
+}
+
+.settings-overlay{
+  width: 40px;
+  background-color: #373a3c;
+  z-index: 9;
+  position: absolute;
+  margin-top: 100px;
+  border-radius: 0 5px 5px 0;
+}
+
+#settings-collapse-button{
+  color: white;
+}
+
+#settings-overlay-expanded{
+  width: 200px;
+  background-color: #373a3c;
+  z-index: 9;
+  position: absolute;
+  margin-top: 136px;
+}
+
+
+.overlay-form-labels{
+  color: white;
+  font-size: small;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.settings-inp{
+  font-size: small;
+  width: 95%;
+  margin-left: 5px;
+  margin-bottom: 10px;
+}
+
+#details-basic-webmap{
+  height: 100%;
+}
+
+.mainarea-details{
+}
+
+#basic-details-cardbody{
+  background-color: white;
+  padding: 5px;
+  font-size: small;
+  overflow: auto;
+}
+
+.basic-details-table-header{
+  font-weight: bold;
+  background-color: #f7f8fa;
+}
+
+.basic-details-table-content{
+
+}
+
+#basic-details-table{
+  width: 100%;
+}
+
+#basic-details-header{
+  font-size: x-large;
+}
+
+.details-logo{
+  height: 200px;
+  margin-left: 30px;
+  margin-top: 100px;
+  opacity: 0.75;
+  margin-bottom: 20px;
+}

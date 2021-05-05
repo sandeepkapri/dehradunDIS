@@ -1,0 +1,16 @@
+.dataset-table-container{
+  background-color: white;
+  width: 100%;
+}
+
+.dataset-save{
+  width: 100px;
+  margin-left: 20px;
+}
+
+.database-modal{
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+  z: 5;
+}

@@ -1,0 +1,31 @@
+.userinfo-h2{
+}
+
+.userinfo-main-container{
+  background-color: white;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px;
+  border-style: solid;
+  border-color: #ededed;
+  border-width: thin;
+  border-radius: 5px;
+}
+
+#userinfo-logo{
+  margin-right: 20px;
+}
+
+#userinfo-change-pwd-button{
+  border-radius: 5px;
+  position: absolute;
+  right: 10px;
+}
+
+.userinfo-rows{
+  margin-top: 20px;
+  border-bottom: solid;
+  border-color: #ededed;
+  border-width: thin;
+}
