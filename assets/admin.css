@@ -24,6 +24,7 @@
 .admin-table-container{
   overflow: auto;
   height: 480px;
+  padding-left: 15px;
 }
 .admin-panel-3-card{
   height: 98%;
