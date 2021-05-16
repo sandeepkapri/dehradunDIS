@@ -1,0 +1,77 @@
+.dis-control-labels{
+  margin: 5px;
+}
+
+#dis-panel-1-card-body{
+  padding: 5px;
+}
+
+#dis-panel-1-card{
+  height: 100%;
+  border-radius: 5px;
+  margin: 2px;
+}
+
+#dis-panel-2-card-body{
+  padding: 0px;
+  height: 100%;
+}
+
+#dis-panel-2-card{
+  height: 100%;
+  border-radius: 5px;
+  margin: 2px;
+}
+
+#dis-panel-3-card-body{
+  padding: 2px;
+  overflow: auto;
+  background-color: white;
+  color: black;
+  overflow: auto;
+  height: 100%;
+}
+
+#dis-panel-3-card{
+  height: 100%;
+  border-radius: 5px;
+  margin: 2px;
+  color: white;
+}
+
+.dis-panel-1{
+
+}
+
+.dis-panel-2{
+
+}
+
+.dis-panel-3{
+  height: 100%;
+}
+
+#dis-apply-filter{
+  width: 100%;
+  border-radius: 5px;
+}
+
+#dis-area-range-slider{
+  margin-top: 8px;
+}
+
+#dis-nature-of-project-multiselect{
+  color: black;
+}
+
+#dis-plot-status-multiselect{
+  color: black;
+}
+
+#dis-map{
+  height: 99.5%;
+}
+
+#dis-details-table{
+  font-size: small;
+}
