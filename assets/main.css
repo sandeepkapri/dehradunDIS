@@ -169,6 +169,24 @@ html, body {
   margin-left: 10px;
 }
 
+
+.legend-overlay{
+  width: 250px;
+  height: 200px;
+  background-color: white;
+  z-index: 10;
+  position: absolute;
+  bottom: 10px;
+  margin-left: 10px;
+  border-radius: 5px;
+  opacity: 0.8;
+  padding: 10px;
+}
+
+#legend-layer-caption{
+  font-weight: bold;
+}
+
 .search-button{
   width: 100%;
   text-align: left;

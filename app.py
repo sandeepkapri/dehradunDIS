@@ -9,8 +9,6 @@
 
 # ### Import Required Libraries
 
-# In[1]:
-
 
 import dash
 import dash_core_components as dcc
@@ -26,16 +24,13 @@ import os
 import dash_table
 import base64
 import smtplib, ssl
-from dash.exceptions import PreventUpdate
-from dash_extensions.callback import CallbackGrouper
+from glob import glob
 
 
 # ### Files Setup
 
-# In[2]:
 
-
-cur_path =os.getcwd()
+cur_path = os.getcwd()
 #---------------Paths------------------------------------------------------
 area_list_csv_path = os.path.join(cur_path, 'support_files', 'area_list.csv')
 #--------------------------------------------------------------------------
@@ -60,7 +55,7 @@ plot_details_col_list = plot_details_df.columns
 plot_details_UID_list = plot_details_df['UID'].values
 
 #Data for Plot Details - Administrator Mode
-plot_details_admin_file = os.path.join(os.path.join(cur_path, 'support_files', 'plot_details.csv'))
+plot_details_admin_file = os.path.join(cur_path, 'support_files', 'plot_details.csv')
 plot_details_admin_df = pd.read_csv(plot_details_admin_file)
 for c in plot_details_admin_df.columns:
     if(c[:7] == 'Unnamed'):
@@ -72,6 +67,8 @@ user_info_csv_path = os.path.join(cur_path, 'support_files', 'user_list.csv')
 #Graphics Folder
 graphics_folder_path = os.path.join(cur_path, 'graphics')
 
+#Additional Data Layers folder
+addnl_data_layer = os.path.join(cur_path, 'additional_layers')
 
 # ## Setup for SMTP
 
@@ -115,10 +112,6 @@ user_info_dict = {'First Name': '',
 # In[6]:
 
 
-
-
-
-
 header_elements = [
                 html.Div(html.H1('Uttarakhand Industrial Information System', className = 'navbar-brand'), className = 'navbar-brand-bar'),
                 html.Div([
@@ -131,8 +124,7 @@ header_elements = [
                     dbc.Tooltip("Deutsche Gesellschaft für Internationale Zusammenarbeit", target = 'giz-logo'),
                     dbc.Tooltip("RBased Services Pvt. Ltd.", target = 'rbs-logo')
 
-                ], className = 'navbar-logo-bar'),
-
+                ], className = 'navbar-logo-bar')
             ]
 
 
@@ -140,8 +132,6 @@ header_elements = [
 page_layout = html.Div([
 
     dcc.Location(id='url', refresh=False),
-
-    dcc.Store(id='local', storage_type='local'),
 
     html.Div(header_elements, className = 'mainheader'),
 
@@ -184,7 +174,7 @@ fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 fig.update(layout_showlegend=False)
 
 #------------------Search Overlay--------------------------------------------------------
-area_list_options = [{'label': "All", 'value': "all"}]
+area_list_options = []
 
 for area in area_list:
     area_list_options.append({'label': area, 'value': area})
@@ -197,7 +187,7 @@ card_content_1 = [
                 options=area_list_options,
                 id = 'area_list_combo',
                 className = 'search-combobox',
-                value = "all"
+                value = "All"
             ), width = 10)]),
 
 
@@ -243,9 +233,74 @@ settings_overlay_div_expanded = html.Div([
 #----------------------------------------------------------------------------------------
 
 
+#------------------Legend Overlay--------------------------------------------------------
+
+legend_div_contents = []
+
+legend_names_list = ['11KV', '33KV', 'Bridge', 'Compline', 'Eline', 'Footpath', 'LTLine', 'Railways', 'River', 'Roads', 'Water', 'EPole', 'Label', 'Manhole', 'Fire Stations', 'Vegetation']
+legend_colors_list = ['#abfd00', '#b41080', '#2268fe', '#67081a', '#918a00', '#7ab0c2', '#b54435', '#d76920', '#0a26a8', '#F00', '#4a34f1', '#29bf23', '#262a61', '#d874be', '#482010', '#60a14f']
+legend_types_list = ['Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Point', 'Point', 'Point', 'Poly', 'Poly']
+
+for li in range(len(legend_names_list)):
+    if(legend_types_list[li] == 'Line'):
+        legend_div_content =  dbc.FormGroup([
+                    dbc.Checkbox(
+                                id="{}-checkbox".format(legend_names_list[li]), className="form-check-input"
+                            ),
+                            dbc.Label(
+                                [html.Span(style = {
+                                'height': '5px',
+                                'width': '15px',
+                                'background-color': legend_colors_list[li],
+                                'display': 'inline-block',
+                                'margin-right': '10px',
+                                'margin-bottom': '4px'
+                                }), legend_names_list[li]],
+                                html_for="{}-checkbox".format(legend_names_list[li]),
+                                className="form-check-label",
+                            ),
+                    
+                ], style = {'opacity': 1}, check=True)
+        legend_div_contents.append(legend_div_content)
+
+    elif(legend_types_list[li] == 'Point'):
+        legend_div_content =  dbc.FormGroup([
+                    dbc.Checkbox(
+                                id="{}-checkbox".format(legend_names_list[li]), className="form-check-input"
+                            ),
+                            dbc.Label(
+                                [html.Span(style = {
+                                'height': '10px',
+                                'width': '10px',
+                                'background-color': legend_colors_list[li],
+                                'border-radius': '50%',
+                                'display': 'inline-block',
+                                'margin-right': '10px',
+                                }), legend_names_list[li]],
+                                html_for="{}-checkbox".format(legend_names_list[li]),
+                                className="form-check-label",
+                            ),
+                    
+                ],  style = {'opacity': 1}, check=True)
+
+        legend_div_contents.append(legend_div_content)
 
 
-mapfig = html.Div([search_overlay_div, settings_overlay_div, settings_overlay_div_expanded, dcc.Graph(figure = fig, style = {'height': '100%'}, id = 'basic-map')], className = 'map-first-page')
+legend_overlay_div = html.Div([
+
+    html.P('Layers', id = 'legend-layer-caption'),
+    html.Div(legend_div_contents, style = {'height':'150px', 'overflow-y':'auto'})
+
+
+    ] ,className = 'legend-overlay')
+
+
+#----------------------------------------------------------------------------------------
+
+
+
+
+mapfig = html.Div([search_overlay_div, settings_overlay_div, legend_overlay_div, settings_overlay_div_expanded, dcc.Graph(figure = fig, style = {'height': '100%'}, id = 'basic-map')], className = 'map-first-page')
 
 @app.callback(
     Output("settings-exp", "is_open"),
@@ -266,64 +321,77 @@ def load_basic_map(area, xyz, opac):
 
     area_list_df = pd.read_csv(area_list_csv_path)
 
-    if(area == "all"):
-        fig = px.choropleth_mapbox(df, geojson=dis_json, locations='id',
-                           color_continuous_scale="Viridis",
-                           zoom=10, center = {"lat": 29.561, "lon": 78.663},
-                           opacity=float(opac),
-                           labels={'Plot_No':'Plot Number'},
-                           hover_data = ['Plot_No', 'UID']
-                          )
+    fig = px.choropleth_mapbox(df, geojson=dis_json, locations='id',
+                        color_continuous_scale="Viridis",
+                        zoom=area_list_df[area_list_df['label'] == area]['zoom'].values[0],
+                        center = {"lat": area_list_df[area_list_df['label'] == area]['lat'].values[0],
+                                            "lon": area_list_df[area_list_df['label'] == area]['lon'].values[0]},
+                        opacity=float(opac),
+                        labels={'Plot_No':'Plot Number'},
+                        hover_data = ['Plot_No', 'UID']
+                        )
+
+    #Add Additional Layers
+    addnl_layers_list = glob(os.path.join(addnl_data_layer, '*.csv'))
+
+    for addnl_f in addnl_layers_list:
+        fname = os.path.split(addnl_f)[1][:-4]
+        l_type = fname.split('_')[0]
+        l_name = fname.split('_')[1]
+        l_color = fname.split('_')[2]
+
+        addnl_layers_df = pd.read_csv(addnl_f)
+
+        if(l_type == 'Line'):
+
+            fig.add_trace(go.Scattermapbox(
+                lat=addnl_layers_df['lat'],
+                lon=addnl_layers_df['lon'],
+                mode="lines",
+                text=addnl_layers_df['name'],
+                hoverinfo = 'text',
+                showlegend=False,
+                line=dict(width=2, color=l_color)
+            ))
+
+        elif(l_type == 'Point'):
+
+            fig.add_trace(go.Scattermapbox(
+                lat=addnl_layers_df['lat'],
+                lon=addnl_layers_df['lon'],
+                text=addnl_layers_df['name'],
+                hoverinfo = 'text',
+                showlegend=False,
+                line=dict(width=2, color=l_color)
+            ))
+
+        
 
 
+    # #Add Roads Layer
+    # addnl_layers_road_df = pd.read_csv(os.path.join(addnl_data_layer, 'all_roads_csv.csv'))
 
-        fig.update_layout(
-            mapbox_style="white-bg",
-            mapbox_layers=[
-                {
-                    "below": 'traces',
-                    "sourcetype": "raster",
-                    "sourceattribution": "Google, RBS Pvt. Ltd.",
-                    "source": [
-                        xyz
-                    ]
-                }
-              ])
+    
 
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-        fig.update(layout_showlegend=False)
+    
 
-        return fig
-    else:
-        fig = px.choropleth_mapbox(df, geojson=dis_json, locations='id',
-                           color_continuous_scale="Viridis",
-                           zoom=area_list_df[area_list_df['label'] == area]['zoom'].values[0],
-                           center = {"lat": area_list_df[area_list_df['label'] == area]['lat'].values[0],
-                                              "lon": area_list_df[area_list_df['label'] == area]['lon'].values[0]},
-                           opacity=float(opac),
-                           labels={'Plot_No':'Plot Number'},
-                           hover_data = ['Plot_No', 'UID']
-                          )
+    fig.update_layout(
+        mapbox_style="white-bg",
+        mapbox_layers=[
+            {
+                "below": 'traces',
+                "sourcetype": "raster",
+                "sourceattribution": "Google, RBS Pvt. Ltd.",
+                "source": [
+                    xyz
+                ]
+            }
+            ])
 
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    fig.update(layout_showlegend=False)
 
-
-        fig.update_layout(
-            mapbox_style="white-bg",
-            mapbox_layers=[
-                {
-                    "below": 'traces',
-                    "sourcetype": "raster",
-                    "sourceattribution": "Google, RBS Pvt. Ltd.",
-                    "source": [
-                        xyz
-                    ]
-                }
-              ])
-
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-        fig.update(layout_showlegend=False)
-
-        return fig
+    return fig
 
 
 #------------------Details Panel Content--------------------------------------
@@ -347,9 +415,6 @@ details_div = html.Div([dbc.Card(details_content, color="dark", inverse=True, st
 @app.callback(Output('basic-details-cardbody', 'children'),
              [Input('basic-map', 'clickData')])
 def basic_map_click(data_clicked):
-
-    plot_details_df = pd.read_csv(plot_details_admin_file)
-
     if(data_clicked == None):
         return [html.Img(src = analysis_graphic, className = 'details-logo'),
                 dbc.Alert("Click on any plot to see its details.", color="primary", style = {'border-radius': '5px'})]
@@ -377,8 +442,6 @@ def basic_map_click(data_clicked):
 
 
 # # Layout for Admin page
-
-# In[8]:
 
 
 admin_card_content_panel1 = [
@@ -428,29 +491,15 @@ admin_panel_3 = dbc.Card(admin_card_content_panel3, color="dark",  className = '
 
 # ## Layout Controls
 
-# In[9]:
-
 
 app.layout = page_layout
 
 #Routing
 @app.callback([Output('navlinkscallback', 'children'),Output('mainareacallback', 'children')],
-              [Input('url', 'pathname')], [State('local', 'data')])
-def display_page(pathname, login_data_local):
+              [Input('url', 'pathname')])
+def display_page(pathname):
 
-    if login_data_local is None:
-        raise PreventUpdate
-
-    try:
-        is_logged_in = login_data_local['is_logged_in']
-    except:
-        is_logged_in = False
-
-    try:
-        session_user_name = login_data_local['session_user_name']
-    except:
-        session_user_name = ''
-
+    global is_logged_in
 
     if(pathname == "/"):
 
@@ -496,9 +545,9 @@ def display_page(pathname, login_data_local):
     elif(pathname == "/dis"):
 
         plot_details_df = pd.read_csv(os.path.join(cur_path, 'support_files', 'plot_details.csv'))
-
+        
         if(is_logged_in):
-
+        
             navigation_links = dbc.ButtonGroup([
 
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
@@ -510,10 +559,10 @@ def display_page(pathname, login_data_local):
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
                                className = 'navlinkbutton-logout', href = "/logout"),
                     dbc.Tooltip(session_user_name + " User Details", target = 'username', placement = 'bottom')
-
+                    
 
                 ], className = 'navlinkbuttongroup')
-
+        
         else:
 
             navigation_links = dbc.ButtonGroup([
@@ -523,12 +572,12 @@ def display_page(pathname, login_data_local):
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
                 dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
-
-
+                    
+                    
 
                 ], className = 'navlinkbuttongroup')
-
-
+            
+            
         #Layout Elements for DIS Page
         #===========================================================================================================
         dis_card_content_panel1 = [
@@ -580,12 +629,12 @@ def display_page(pathname, login_data_local):
             dbc.CardFooter([dbc.Button('Apply Filter', color = 'primary', id = 'dis-apply-filter'),])
         ]
         dis_panel_1 = dbc.Card(dis_card_content_panel1, color="dark", inverse=True, id = 'dis-panel-1-card')
-
+        
         #Map Area---------------------------------------------------------------------------------------------
-
+        
         plot_details_admin_df = pd.read_csv(plot_details_admin_file)
-
-        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID',
+        
+        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID', 
                            color_continuous_scale="Viridis",
                            zoom=10, center = {"lat": 29.561, "lon": 78.663},
                            opacity=0.8,
@@ -614,12 +663,12 @@ def display_page(pathname, login_data_local):
             dbc.CardBody(
                 [
                     dcc.Graph(figure = fig, id = 'dis-map')
-
+                    
                 ], id = 'dis-panel-2-card-body'
             ),
         ]
         dis_panel_2 = dbc.Card(dis_card_content_panel2, color="dark",  id = 'dis-panel-2-card', outline = True)
-
+        
         #-------------------------------------------------------------------------------------------------------
 
         dis_card_content_panel3 = [
@@ -628,21 +677,21 @@ def display_page(pathname, login_data_local):
                 [
                     html.Img(src = analysis_graphic, className = 'details-logo'),
                     dbc.Alert("Click on any plot to see its details.", color="primary", style = {'border-radius': '5px'})
-
+                    
                 ] , id = 'dis-panel-3-card-body'
             ),
         ]
         dis_panel_3 = dbc.Card(dis_card_content_panel3, color="dark",  id = 'dis-panel-3-card')
-
-
+        
+        
         #===========================================================================================================
 
-        main_area = [
+        main_area = [            
                 dbc.Col(dis_panel_1, width = 2, className = 'dis-panel-1'),
                 dbc.Col(dis_panel_2, width = 8, className = 'dis-panel-2'),
                 dbc.Col(dis_panel_3, width = 2, className = 'dis-panel-3')
             ]
-
+        
         return navigation_links, main_area
 
     elif(pathname == "/admin"):
@@ -784,12 +833,9 @@ def display_page(pathname, login_data_local):
             dbc.CardHeader("Login"),
             dbc.CardBody(
                 [
-                    dbc.Form([email_input, password_input,
-                              html.Div(submit_button, className = 'submitbutton'),
-                              dbc.Button('Logout', color = 'primary', style = {'width': '100%', 'display':'none'}, id = 'logout-confirmation-butt')]),
+                    dbc.Form([email_input, password_input, html.Div(submit_button, className = 'submitbutton')]),
 
                     dbc.Modal(id="login-message", is_open = False, centered=True),
-                    dbc.Modal(id="logout-message", is_open = False, centered=True),
                     dbc.Button('Forgot Password', color = 'link', className = 'forgot-pass-button', href = '/forgot-password')
 
                 ]
@@ -803,48 +849,39 @@ def display_page(pathname, login_data_local):
     elif(pathname == "/logout"):
 
 
+
+        is_logged_in = False
+
         navigation_links = dbc.ButtonGroup([
 
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
                     dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
-                    dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'primary',
-                               className = 'navlinkbutton', href = "/userinfo", id='username'),
-                    dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'warning',
-                               className = 'navlinkbutton-logout', href = "/logout"),
-                    dbc.Tooltip(session_user_name + " User Details", target = 'username', placement = 'bottom')
+                    dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login"),
 
 
 
                 ], className = 'navlinkbuttongroup')
 
-        modal_content = [dbc.ModalHeader("Logout Successful."),
-                                 dbc.ModalBody("You have been successfully logged out."),
-                                 dbc.ModalFooter(dbc.Button("Okay", href="/", className="ml-auto")
-                                                  )]
+        main_area = [
 
-        card_content = [
-            dbc.CardHeader("Logout"),
-            dbc.CardBody(
-                [
-                    html.P('You are about to logout from user {}. Do you wish to continue?'.format(session_user_name)),
-                    dbc.Modal(modal_content,id="logout-message", is_open = False, centered=True),
-                    dbc.Modal(id="login-message", is_open = False, centered=True),
-                    dbc.Button("Login", color="primary", style = {'width': '100px', 'display':'none'}, id = 'login-button'),
-                    dbc.Button('Logout', color = 'primary', style = {'width': '100%'}, id = 'logout-confirmation-butt'),
-                    dbc.Input(type="text", id="example-email", style = {'display':'none'}),
-                    dbc.Input(type="text", id="example-password", style = {'display':'none'}),
+                    dbc.Alert(
+                        [
+                            html.H4("Logged Out Successfully!!!", className="alert-heading"),
+                            html.P(
+                                "You have been logged out successfully. If you wish to login again, click on Login on the top navigation. Alternatively, you can access the application in Guest mode. "
+                            ),
 
-                ]
-            ),
-        ]
+                        ], className = 'logout-info-div'
+                    )
 
-        form = dbc.Card(card_content,color="dark", inverse=True, style = {'border-radius': '10px'})
+            ]
 
-        return navigation_links, html.Div(form, className = 'loginform')
+        return navigation_links, main_area
 
     elif(pathname == "/dataset"):
+
 
         if(is_logged_in):
 
@@ -879,7 +916,7 @@ def display_page(pathname, login_data_local):
                                     style = {
                                         'position': 'fixed',
                                         'top': '85px',
-                                        'right': '10px', 'left': '20px'}
+                                        'right': '10px'}
                                 ),
 
                             dash_table.DataTable(
@@ -1032,7 +1069,6 @@ def display_page(pathname, login_data_local):
 
     elif(pathname == '/forgot-password'):
 
-
         if(is_logged_in):
 
             navigation_links = dbc.ButtonGroup([
@@ -1088,7 +1124,6 @@ def display_page(pathname, login_data_local):
 
     else:
 
-
         navigation_links = dbc.ButtonGroup([
 
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
@@ -1115,10 +1150,8 @@ def display_page(pathname, login_data_local):
 
 
 
+
 # ## Callback for Dataset Page
-
-# In[10]:
-
 
 @app.callback(
     [Output("modal", "is_open"),
@@ -1173,95 +1206,177 @@ def toggle_modal(n1, rows, columns, is_open):
 
     return False, [{"name": i, "id": i} for i in plot_details_admin_df.columns], plot_details_admin_df.to_dict('records'), tooltip_data
 
+# ## Callbacks for DIS Page
+#Callback to filter data
+@app.callback(Output('dis-panel-2-card-body', 'children'),
+             [Input('dis-apply-filter', 'n_clicks')],
+             [State('dis-area-range-slider', 'value'),
+              State('dis-nature-of-project-multiselect', 'value'),
+              State('dis-plot-status-multiselect', 'value')])
+def filter_data_for_dis_map(n, arearange, project_nature, plot_status):
+    if(n):
+        
+        plot_details_df = pd.read_csv(plot_details_admin_file)
+        
+        #Apply Area Range Filter
+        plot_details_df['Geometric Area'] = [float(x) for x in plot_details_df['Geometric Area']]
+        plot_details_df = plot_details_df[(plot_details_df['Geometric Area'] >= float(arearange[0])) & (plot_details_df['Geometric Area'] <= float(arearange[1]))]
+        
+        #Apply Nature of Project Filter
+        if(project_nature is not None):
+            plot_details_df = plot_details_df[plot_details_df['Nature of Project'].isin(project_nature)]
+            
+        #Apply Plot Status Filter
+        if(plot_status is not None):
+            plot_details_df = plot_details_df[plot_details_df['Plot Status '].isin(plot_status)]
+        
+        
+        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID', 
+                           color_continuous_scale="Viridis",
+                           zoom=10, center = {"lat": 29.561, "lon": 78.663},
+                           opacity=0.8,
+                           labels={'Plot Number':'Plot Number'},
+                           hover_data = ['Plot Number', 'UID', 'Geometric Area', 'Nature of Project', 'Plot Status ']
+                          )
+
+
+        fig.update_layout(
+            mapbox_style="white-bg",
+            mapbox_layers=[
+                {
+                    "below": 'traces',
+                    "sourcetype": "raster",
+                    "sourceattribution": "Google, RBS Pvt. Ltd.",
+                    "source": [
+                        "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"
+                    ]
+                }
+              ])
+
+        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+        fig.update(layout_showlegend=False)
+        
+        
+        return dcc.Graph(figure = fig, id = 'dis-map')
+    
+    else:
+        
+        plot_details_df = pd.read_csv(plot_details_admin_file)
+        
+        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID', 
+                           color_continuous_scale="Viridis",
+                           zoom=10, center = {"lat": 29.561, "lon": 78.663},
+                           opacity=0.8,
+                           labels={'Plot Number':'Plot Number'},
+                           #hover_data = ['Plot Number', 'UID', 'Geometric Area', 'Nature of Project', 'Plot Status ']
+                          )
+
+
+        fig.update_layout(
+            mapbox_style="white-bg",
+            mapbox_layers=[
+                {
+                    "below": 'traces',
+                    "sourcetype": "raster",
+                    "sourceattribution": "Google, RBS Pvt. Ltd.",
+                    "source": [
+                        "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"
+                    ]
+                }
+              ])
+
+        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+        fig.update(layout_showlegend=False)
+        
+        
+        return dcc.Graph(figure = fig, id = 'dis-map')
+        
+        
+
+
+#To show data in the details panel
+@app.callback(Output('dis-panel-3-card-body', 'children'),
+             [Input('dis-map', 'clickData')])
+def dis_map_click(data_clicked):
+    
+    plot_details_df = pd.read_csv(plot_details_admin_file)
+    
+    if(data_clicked == None):
+        return [html.Img(src = analysis_graphic, className = 'details-logo'), 
+                dbc.Alert("Click on any plot to see its details.", color="primary", style = {'border-radius': '5px'})]
+    else: 
+        mini_df = plot_details_df[plot_details_df['UID'] == data_clicked['points'][0]['location']].dropna(axis='columns')
+        
+               
+        
+        if(len(mini_df) == 0):
+            return [dbc.Alert("{}".format(data_clicked['points'][0]['location']), color="success", id = 'basic-details-header'),
+                    dbc.Alert("No records found for the selected plot.".format(len(mini_df)), color="primary", style = {'border-radius': '5px'}),
+                    ]
+        else:
+            
+            details_table_body = []
+        
+            for c in range(len(mini_df.columns)):
+
+                details_table_body.append(html.Tr([html.Td(mini_df.columns[c], className = 'basic-details-table-header'), html.Td(str(mini_df[mini_df['UID'] == data_clicked['points'][0]['location']][mini_df.columns[c]].values[0]),className = 'basic-details-table-content')]))
+        
+            
+            return [dbc.Alert("{}".format(mini_df['UID'].values[0]), color="success", id = 'basic-details-header'),
+                    dbc.Table(details_table_body, bordered=True, id = 'dis-details-table')]
+
 
 # ## Login Controls - User Authentication
 
-# In[11]:
 
+@app.callback(Output('login-message', 'children'), Output('login-message', 'is_open'),
+              [Input("login-button", "n_clicks")],
+              [State('example-email', 'value'), State('example-password', 'value'), State('login-message', 'is_open')])
+def autheticate_user(n, user, pwd, is_open):
 
-@app.callback([Output('login-message', 'children'), Output('login-message', 'is_open'), Output('logout-message', 'is_open'), Output('local', 'data')],
-              [Input("login-button", "n_clicks"), Input("logout-confirmation-butt", "n_clicks")],
-              [State('example-email', 'value'), State('example-password', 'value'), State('login-message', 'is_open'),
-              ])
-def autheticate_user(n, n2, user, pwd, is_open):
+    global is_logged_in
+    global session_user_name
+    global user_info_dict
 
-    ctx = dash.callback_context
+    user_df = pd.read_csv(user_info_csv_path)
 
-    if not ctx.triggered:
-        button_id = 'No clicks yet'
-    else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    if(n):
 
-    if(button_id == 'login-button'):
+        mini_df = user_df[user_df['Username'] == user]
 
-        print('Login Happenin Babes')
+        if(len(mini_df) == 0):
 
-        user_df = pd.read_csv(user_info_csv_path)
+            modal_content = [dbc.ModalHeader("Login Unsuccessful."),
+                             dbc.ModalBody("No such user exists. Please check your inputs and try again.")]
 
-        if(n):
-
-            mini_df = user_df[user_df['Username'] == user]
-
-            if(len(mini_df) == 0):
-
-                modal_content = [dbc.ModalHeader("Login Unsuccessful."),
-                                 dbc.ModalBody("No such user exists. Please check your inputs and try again.")]
-
-                login_data_local = {'is_logged_in': False,
-                                    'session_user_name': '',
-                                    'user_info_dict': ''}
-
-                return modal_content, True, False, login_data_local
-            else:
-                if(mini_df['Password'].values[0] == pwd):
-
-                    modal_content = [dbc.ModalHeader("Login Successful."),
-                                 dbc.ModalBody("Welcome, {}".format(mini_df['First Name'].values[0])),
-                                 dbc.ModalFooter(dbc.Button("Okay", href="/", className="ml-auto"))]
-
-                    is_logged_in = True
-
-                    session_user_name = "{} {}".format(mini_df['First Name'].values[0], mini_df['Last Name'].values[0])
-
-                    user_info_dict = {'First Name': mini_df['First Name'].values[0],
-                                      'Middle Name': mini_df['Middle Name'].values[0],
-                                      'Last Name': mini_df['Last Name'].values[0],
-                                      'DOB': mini_df['DOB'].values[0],
-                                      'Username': mini_df['Username'].values[0],
-                                      'Password': mini_df['Password'].values[0]}
-
-                    login_data_local = {'is_logged_in': is_logged_in,
-                                        'session_user_name': session_user_name,
-                                        'user_info_dict': user_info_dict}
-
-
-
-                    return modal_content, True, False, login_data_local
-
-                else:
-                    modal_content = [dbc.ModalHeader("Login Unsuccessful."),
-                                 dbc.ModalBody("Invalid Password. Please check your inputs and try again.")]
-
-                    login_data_local = {'is_logged_in': False,
-                                    'session_user_name': '',
-                                    'user_info_dict': ''}
-
-
-                    return modal_content, True, False, login_data_local
+            return modal_content, True
         else:
-            raise PreventUpdate
-    elif(button_id == 'logout-confirmation-butt'):
-        print('logout happening babes')
+            if(mini_df['Password'].values[0] == pwd):
 
-        modal_content = [dbc.ModalHeader("Login Unsuccessful."),
-                                 dbc.ModalBody("Invalid Password. Please check your inputs and try again.")]
+                modal_content = [dbc.ModalHeader("Login Successful."),
+                             dbc.ModalBody("Welcome, {}".format(mini_df['First Name'].values[0])),
+                             dbc.ModalFooter(dbc.Button("Okay", href="/", className="ml-auto"))]
 
-        login_data_local = {'is_logged_in': False,
-                        'session_user_name': '',
-                        'user_info_dict': ''}
+                is_logged_in = True
+
+                session_user_name = "{} {}".format(mini_df['First Name'].values[0], mini_df['Last Name'].values[0])
+
+                user_info_dict = {'First Name': mini_df['First Name'].values[0],
+                                  'Middle Name': mini_df['Middle Name'].values[0],
+                                  'Last Name': mini_df['Last Name'].values[0],
+                                  'DOB': mini_df['DOB'].values[0],
+                                  'Username': mini_df['Username'].values[0],
+                                  'Password': mini_df['Password'].values[0]}
 
 
-        return modal_content, False, True, login_data_local
+
+                return modal_content, True
+
+            else:
+                modal_content = [dbc.ModalHeader("Login Unsuccessful."),
+                             dbc.ModalBody("Invalid Password. Please check your inputs and try again.")]
+
+                return modal_content, True
 
 
 # ## Forgot Password Page Callbacks
@@ -1301,133 +1416,9 @@ def forgot_password(n, email):
             return dbc.Alert('The password has been sent to {}.'.format(email), color = 'success', className = 'forgot-pass-alert-child')
 
 
-# ## Callback for DIS Page
-
-# In[13]:
-
-
-#Callback to filter data
-@app.callback(Output('dis-panel-2-card-body', 'children'),
-             [Input('dis-apply-filter', 'n_clicks')],
-             [State('dis-area-range-slider', 'value'),
-              State('dis-nature-of-project-multiselect', 'value'),
-              State('dis-plot-status-multiselect', 'value')])
-def filter_data_for_dis_map(n, arearange, project_nature, plot_status):
-    if(n):
-
-        plot_details_df = pd.read_csv(plot_details_admin_file)
-
-        #Apply Area Range Filter
-        plot_details_df['Geometric Area'] = [float(x) for x in plot_details_df['Geometric Area']]
-        plot_details_df = plot_details_df[(plot_details_df['Geometric Area'] >= float(arearange[0])) & (plot_details_df['Geometric Area'] <= float(arearange[1]))]
-
-        #Apply Nature of Project Filter
-        if(project_nature is not None):
-            plot_details_df = plot_details_df[plot_details_df['Nature of Project'].isin(project_nature)]
-
-        #Apply Plot Status FIlter
-        if(plot_status is not None):
-            plot_details_df = plot_details_df[plot_details_df['Plot Status '].isin(plot_status)]
-
-
-        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID',
-                           color_continuous_scale="Viridis",
-                           zoom=10, center = {"lat": 29.561, "lon": 78.663},
-                           opacity=0.8,
-                           labels={'Plot Number':'Plot Number'},
-                           hover_data = ['Plot Number', 'UID', 'Geometric Area', 'Nature of Project', 'Plot Status ']
-                          )
-
-
-        fig.update_layout(
-            mapbox_style="white-bg",
-            mapbox_layers=[
-                {
-                    "below": 'traces',
-                    "sourcetype": "raster",
-                    "sourceattribution": "Google, RBS Pvt. Ltd.",
-                    "source": [
-                        "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"
-                    ]
-                }
-              ])
-
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-        fig.update(layout_showlegend=False)
-
-        print('Lenght of list {}'.format(len(plot_details_df)))
-        return dbc.Spinner(dcc.Graph(figure = fig, id = 'dis-map'))
-
-    else:
-
-        plot_details_df = pd.read_csv(plot_details_admin_file)
-
-        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID',
-                           color_continuous_scale="Viridis",
-                           zoom=10, center = {"lat": 29.561, "lon": 78.663},
-                           opacity=0.8,
-                           labels={'Plot Number':'Plot Number'},
-                           #hover_data = ['Plot Number', 'UID', 'Geometric Area', 'Nature of Project', 'Plot Status ']
-                          )
-
-
-        fig.update_layout(
-            mapbox_style="white-bg",
-            mapbox_layers=[
-                {
-                    "below": 'traces',
-                    "sourcetype": "raster",
-                    "sourceattribution": "Google, RBS Pvt. Ltd.",
-                    "source": [
-                        "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"
-                    ]
-                }
-              ])
-
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-        fig.update(layout_showlegend=False)
-
-        print('Lenght of list {}'.format(len(plot_details_df)))
-        return dbc.Spinner(dcc.Graph(figure = fig, id = 'dis-map'))
-
-
-
-
-#To show data in the details panel
-@app.callback(Output('dis-panel-3-card-body', 'children'),
-             [Input('dis-map', 'clickData')])
-def dis_map_click(data_clicked):
-
-    plot_details_df = pd.read_csv(plot_details_admin_file)
-
-    if(data_clicked == None):
-        return [html.Img(src = analysis_graphic, className = 'details-logo'),
-                dbc.Alert("Click on any plot to see its details.", color="primary", style = {'border-radius': '5px'})]
-    else:
-        mini_df = plot_details_df[plot_details_df['UID'] == data_clicked['points'][0]['location']].dropna(axis='columns')
-
-
-
-        if(len(mini_df) == 0):
-            return [dbc.Alert("{}".format(data_clicked['points'][0]['location']), color="success", id = 'basic-details-header'),
-                    dbc.Alert("No records found for the selected plot.".format(len(mini_df)), color="primary", style = {'border-radius': '5px'}),
-                    ]
-        else:
-
-            details_table_body = []
-
-            for c in range(len(mini_df.columns)):
-
-                details_table_body.append(html.Tr([html.Td(mini_df.columns[c], className = 'basic-details-table-header'), html.Td(str(mini_df[mini_df['UID'] == data_clicked['points'][0]['location']][mini_df.columns[c]].values[0]),className = 'basic-details-table-content')]))
-
-
-            return [dbc.Alert("{}".format(mini_df['UID'].values[0]), color="success", id = 'basic-details-header'),
-                    dbc.Table(details_table_body, bordered=True, id = 'dis-details-table')]
-
-
 # ## Callback for Admin Page
 
-# In[14]:
+# In[13]:
 
 
 selected_admin_uid = ''
