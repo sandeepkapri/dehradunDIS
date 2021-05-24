@@ -235,55 +235,26 @@ settings_overlay_div_expanded = html.Div([
 
 #------------------Legend Overlay--------------------------------------------------------
 
-legend_div_contents = []
+legend_div_contents = [dbc.FormGroup([dbc.Checkbox(id='KV11-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#abfd00', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), '11KV'], html_for='KV11-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='KV33-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#b41080', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), '33KV'], html_for='KV33-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Bridge-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#2268fe', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Bridge'], html_for='Bridge-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Compline-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#67081a', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Compline'], html_for='Compline-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Eline-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#918a00', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Eline'], html_for='Eline-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Footpath-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#7ab0c2', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Footpath'], html_for='Footpath-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='LTLine-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#b54435', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'LTLine'], html_for='LTLine-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Railways-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#d76920', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Railways'], html_for='Railways-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='River-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#0a26a8', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'River'], html_for='River-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Roads-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#F00', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Roads'], html_for='Roads-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Water-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '5px','width': '15px','background-color': '#4a34f1', 'display': 'inline-block','margin-right': '10px','margin-bottom': '4px'}), 'Water'], html_for='Water-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='EPole-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '10px','width': '10px','background-color': '#29bf23', 'border-radius': '50%', 'display': 'inline-block','margin-right': '10px'}), 'EPole'], html_for='EPole-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Label-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '10px','width': '10px','background-color': '#262a61', 'border-radius': '50%', 'display': 'inline-block','margin-right': '10px'}), 'Label'], html_for='Label-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,
+dbc.FormGroup([dbc.Checkbox(id='Manhole-checkbox', className='form-check-input', checked = True), dbc.Label([html.Span(style = {'height': '10px','width': '10px','background-color': '#d874be', 'border-radius': '50%', 'display': 'inline-block','margin-right': '10px'}), 'Manhole'], html_for='Manhole-checkbox', className='form-check-label',),], style = {'opacity': 1}, check=True) ,]
 
-legend_names_list = ['11KV', '33KV', 'Bridge', 'Compline', 'Eline', 'Footpath', 'LTLine', 'Railways', 'River', 'Roads', 'Water', 'EPole', 'Label', 'Manhole', 'Fire Stations', 'Vegetation']
+legend_names_list = ['11KV', '33KV', 'Bridge', 'Compline', 'Eline', 'Footpath', 'LTLine', 'Railways', 'River', 'Roads', 'Water', 'EPole', 'Label', 'Manhole', 'Fire_Stations', 'Vegetation']
 legend_colors_list = ['#abfd00', '#b41080', '#2268fe', '#67081a', '#918a00', '#7ab0c2', '#b54435', '#d76920', '#0a26a8', '#F00', '#4a34f1', '#29bf23', '#262a61', '#d874be', '#482010', '#60a14f']
 legend_types_list = ['Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Point', 'Point', 'Point', 'Poly', 'Poly']
 
-for li in range(len(legend_names_list)):
-    if(legend_types_list[li] == 'Line'):
-        legend_div_content =  dbc.FormGroup([
-                    dbc.Checkbox(
-                                id="{}-checkbox".format(legend_names_list[li]), className="form-check-input"
-                            ),
-                            dbc.Label(
-                                [html.Span(style = {
-                                'height': '5px',
-                                'width': '15px',
-                                'background-color': legend_colors_list[li],
-                                'display': 'inline-block',
-                                'margin-right': '10px',
-                                'margin-bottom': '4px'
-                                }), legend_names_list[li]],
-                                html_for="{}-checkbox".format(legend_names_list[li]),
-                                className="form-check-label",
-                            ),
-                    
-                ], style = {'opacity': 1}, check=True)
-        legend_div_contents.append(legend_div_content)
 
-    elif(legend_types_list[li] == 'Point'):
-        legend_div_content =  dbc.FormGroup([
-                    dbc.Checkbox(
-                                id="{}-checkbox".format(legend_names_list[li]), className="form-check-input"
-                            ),
-                            dbc.Label(
-                                [html.Span(style = {
-                                'height': '10px',
-                                'width': '10px',
-                                'background-color': legend_colors_list[li],
-                                'border-radius': '50%',
-                                'display': 'inline-block',
-                                'margin-right': '10px',
-                                }), legend_names_list[li]],
-                                html_for="{}-checkbox".format(legend_names_list[li]),
-                                className="form-check-label",
-                            ),
-                    
-                ],  style = {'opacity': 1}, check=True)
-
-        legend_div_contents.append(legend_div_content)
 
 
 legend_overlay_div = html.Div([
@@ -316,8 +287,42 @@ def toggle_collapse(n, is_open):
 @app.callback(
     Output("basic-map", "figure"),
     [Input("area_list_combo", "value"), Input('basemap-xyz-input', 'value'),
-     Input('opacity-input', 'value')])
-def load_basic_map(area, xyz, opac):
+    Input('opacity-input', 'value'),
+    Input('KV11-checkbox', 'checked'),
+    Input('KV33-checkbox', 'checked'),
+    Input('Bridge-checkbox', 'checked'),
+    Input('Compline-checkbox', 'checked'),
+    Input('Eline-checkbox', 'checked'),
+    Input('Footpath-checkbox', 'checked'),
+    Input('LTLine-checkbox', 'checked'),
+    Input('Railways-checkbox', 'checked'),
+    Input('River-checkbox', 'checked'),
+    Input('Roads-checkbox', 'checked'),
+    Input('Water-checkbox', 'checked'),
+    Input('EPole-checkbox', 'checked'),
+    Input('Label-checkbox', 'checked'),
+    Input('Manhole-checkbox', 'checked'),
+    
+     ])
+def load_basic_map(area, xyz, opac, KV11_val, KV33_val, Bridge_val, Compline_val, Eline_val, Footpath_val, LTLine_val, 
+                  Railways_val, River_val, Roads_val, Water_val, EPole_val, Label_val, Manhole_val):
+
+    layers_which_are_active = []
+
+    if(KV11_val): layers_which_are_active.append('11KV')
+    if(KV33_val): layers_which_are_active.append('33KV')
+    if(Bridge_val): layers_which_are_active.append('Bridge')
+    if(Compline_val): layers_which_are_active.append('Compline')
+    if(Eline_val): layers_which_are_active.append('Eline')
+    if(Footpath_val): layers_which_are_active.append('Footpath')
+    if(LTLine_val): layers_which_are_active.append('LTLine')
+    if(Railways_val): layers_which_are_active.append('Railways')
+    if(River_val): layers_which_are_active.append('River')
+    if(Roads_val): layers_which_are_active.append('Roads')
+    if(Water_val): layers_which_are_active.append('Water')
+    if(EPole_val): layers_which_are_active.append('EPole')
+    if(Label_val): layers_which_are_active.append('Label')
+    if(Manhole_val): layers_which_are_active.append('Manhole')
 
     area_list_df = pd.read_csv(area_list_csv_path)
 
@@ -344,26 +349,30 @@ def load_basic_map(area, xyz, opac):
 
         if(l_type == 'Line'):
 
-            fig.add_trace(go.Scattermapbox(
-                lat=addnl_layers_df['lat'],
-                lon=addnl_layers_df['lon'],
-                mode="lines",
-                text=addnl_layers_df['name'],
-                hoverinfo = 'text',
-                showlegend=False,
-                line=dict(width=2, color=l_color)
-            ))
+            if(l_name in layers_which_are_active):
+
+                fig.add_trace(go.Scattermapbox(
+                    lat=addnl_layers_df['lat'],
+                    lon=addnl_layers_df['lon'],
+                    mode="lines",
+                    text=addnl_layers_df['name'],
+                    hoverinfo = 'text',
+                    showlegend=False,
+                    line=dict(width=2, color=l_color)
+                ))
 
         elif(l_type == 'Point'):
 
-            fig.add_trace(go.Scattermapbox(
-                lat=addnl_layers_df['lat'],
-                lon=addnl_layers_df['lon'],
-                text=addnl_layers_df['name'],
-                hoverinfo = 'text',
-                showlegend=False,
-                line=dict(width=2, color=l_color)
-            ))
+            if(l_name in layers_which_are_active):
+
+                fig.add_trace(go.Scattermapbox(
+                    lat=addnl_layers_df['lat'],
+                    lon=addnl_layers_df['lon'],
+                    text=addnl_layers_df['name'],
+                    hoverinfo = 'text',
+                    showlegend=False,
+                    line=dict(width=2, color=l_color)
+                ))
 
         
 
@@ -436,7 +445,7 @@ def basic_map_click(data_clicked):
                 details_table_body.append(html.Tr([html.Td(mini_df.columns[c], className = 'basic-details-table-header'), html.Td(str(mini_df[mini_df['UID'] == data_clicked['points'][0]['location']][mini_df.columns[c]].values[0]),className = 'basic-details-table-content')]))
 
 
-            return [dbc.Alert("{}".format(mini_df['UID'].values[0]), color="success", id = 'basic-details-header'),
+            return [dbc.Alert("{}".format(mini_df['Plot Number'].values[0]), color="success", id = 'basic-details-header'),
                     dbc.Table(details_table_body, bordered=True, id = 'basic-details-table')]
 
 
