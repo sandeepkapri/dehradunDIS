@@ -488,52 +488,7 @@ def basic_map_click(data_clicked):
 
 
 
-# # Layout for Admin page
 
-
-admin_card_content_panel1 = [
-    dbc.CardHeader("Select Industry/Park"),
-    dbc.CardBody(
-        [
-            html.P('UID', id = 'admin-uid-label'),
-            dcc.Dropdown(
-                    id="uid-select",
-                    options=[
-                        {"label": x, "value": x} for x in plot_details_UID_list]
-                ),
-            dbc.Button('Open in Editor', color = 'primary', id = 'admin-open-editor-button'),
-
-            dbc.Button('Show Dataset', color = 'success', id = 'admin-show-dataset-button', href = '/dataset'),
-
-            dbc.Modal(
-                [
-                    dbc.ModalHeader("Changes Saved"),
-                    dbc.ModalBody("Changes made to the dataset has been successfully saved."),
-
-                ],
-                id="admin-alert-modal", centered = True
-            ),
-
-        ], className = 'admin-panel-1-card-body'
-    ),
-]
-admin_panel_1 = dbc.Card(admin_card_content_panel1, color="dark", inverse=True, className = 'admin-panel-1-card')
-
-admin_card_content_panel2 = [
-    dbc.CardHeader("Record Editor"),
-    dbc.CardBody(
-        [], className = 'admin-panel-2-card-body', id = 'admin-panel-2-card-body'
-    ),
-]
-admin_panel_2 = dbc.Card(admin_card_content_panel2, color="dark",  className = 'admin-panel-2-card', outline = True)
-
-admin_card_content_panel3 = [
-    dbc.CardHeader("Existing Status"),
-    dbc.CardBody(
-        [] , className = 'admin-panel-3-card-body', id = 'admin-panel-3-card-body'
-    ),
-]
-admin_panel_3 = dbc.Card(admin_card_content_panel3, color="dark",  className = 'admin-panel-3-card')
 
 
 # ## Layout Controls
@@ -772,6 +727,62 @@ def display_page(pathname):
 
                 ], className = 'navlinkbuttongroup')
 
+            # # Layout for Admin page---------------------------------------------------------------------------------------------------------------------------
+            
+            plot_details_df = pd.read_csv(os.path.join(cur_path, 'support_files', 'plot_details.csv'))
+            
+            admin_card_content_panel1 = [
+                dbc.CardHeader("Select Industry/Park"),
+                dbc.CardBody(
+                    [
+                        html.P('Park/Industrial Estate', id = 'admin-park-label'),
+                        dcc.Dropdown(
+                                id="admin-park-select",
+                                options=[
+                                    {"label": x, "value": x} for x in plot_details_df['Name of Industrial Estate'].unique()],
+                                style = {'color': 'black'}
+                            ),
+                        html.P('UID', id = 'admin-uid-label'),
+                        dcc.Dropdown(
+                                id="uid-select",
+                                
+                            ),
+                        dbc.Button('Open in Editor', color = 'primary', id = 'admin-open-editor-button'),
+
+                        dbc.Button('Show Dataset', color = 'success', id = 'admin-show-dataset-button', href = '/dataset'),
+
+                        dbc.Modal(
+                            [
+                                dbc.ModalHeader("Changes Saved"),
+                                dbc.ModalBody("Changes made to the dataset has been successfully saved."),
+
+                            ],
+                            id="admin-alert-modal", centered = True
+                        ),
+
+                    ], className = 'admin-panel-1-card-body'
+                ),
+            ]
+            admin_panel_1 = dbc.Card(admin_card_content_panel1, color="dark", inverse=True, className = 'admin-panel-1-card')
+
+            admin_card_content_panel2 = [
+                dbc.CardHeader("Record Editor"),
+                dbc.CardBody(
+                    [], className = 'admin-panel-2-card-body', id = 'admin-panel-2-card-body'
+                ),
+            ]
+            admin_panel_2 = dbc.Card(admin_card_content_panel2, color="dark",  className = 'admin-panel-2-card', outline = True)
+
+            admin_card_content_panel3 = [
+                dbc.CardHeader("Existing Status"),
+                dbc.CardBody(
+                    [] , className = 'admin-panel-3-card-body', id = 'admin-panel-3-card-body'
+                ),
+            ]
+            admin_panel_3 = dbc.Card(admin_card_content_panel3, color="dark",  className = 'admin-panel-3-card')
+
+            #--------------------------------------------------------------------------------------------------------------------------------------------------------
+
             main_area = [
                     dbc.Col(admin_panel_1, width = 2, className = 'admin-panel-1'),
                     dbc.Col(admin_panel_2, width = 7, className = 'admin-panel-2'),
@@ -958,6 +969,8 @@ def display_page(pathname):
 
 
                 ], className = 'navlinkbuttongroup')
+
+            plot_details_admin_df = pd.read_csv(plot_details_admin_file)
 
             main_area = [
 
@@ -1454,9 +1467,6 @@ def autheticate_user(n, user, pwd, is_open):
 
 # ## Forgot Password Page Callbacks
 
-# In[12]:
-
-
 @app.callback(Output('forgot-pass-alert', 'children'),
              [Input('send-verf-code-button', 'n_clicks')],
              [State('email-input-forgot-pass','value')])
@@ -1491,10 +1501,13 @@ def forgot_password(n, email):
 
 # ## Callback for Admin Page
 
-# In[13]:
-
 
 selected_admin_uid = ''
+
+@app.callback(Output('uid-select','options'), Input('admin-park-select', 'value'))
+def generate_uid_select_values(park):
+    plot_details_df = pd.read_csv(os.path.join(cur_path, 'support_files', 'plot_details.csv'))
+    return [{"label": x, "value": x} for x in plot_details_df[plot_details_df['Name of Industrial Estate'] == park]['UID']]
 
 @app.callback(Output('admin-panel-2-card-body', 'children'), Output('admin-panel-3-card-body', 'children'),
               Input('admin-open-editor-button', 'n_clicks'),
