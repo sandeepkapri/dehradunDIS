@@ -647,6 +647,8 @@ def display_page(pathname):
                             }
                         ),
 
+                    
+
                     html.P('Nature of Project', className = 'dis-control-labels'),
 
                     dcc.Dropdown(
@@ -664,6 +666,16 @@ def display_page(pathname):
                         options=[
                             {'label': x, 'value': x} for x in plot_details_df['Plot Status '].unique()
                         ],
+                        multi=True
+                    ),
+
+                    html.P('PCB Category', className = 'dis-control-labels'),
+
+                    dcc.Dropdown(
+                        id = 'dis-pcb-category-multiselect',
+                        options=[
+                            {'label': x, 'value': x} for x in plot_details_df['PCB Category'].unique()
+                        ], style = {'color': 'black'},
                         multi=True
                     ),
 
@@ -1254,16 +1266,22 @@ def toggle_modal(n1, rows, columns, is_open):
     return False, [{"name": i, "id": i} for i in plot_details_admin_df.columns], plot_details_admin_df.to_dict('records'), tooltip_data
 
 # ## Callbacks for DIS Page
+
+
+
 #Callback to filter data
 @app.callback(Output('dis-panel-2-card-body', 'children'),
              [Input('dis-apply-filter', 'n_clicks')],
              [State('dis-area-range-slider', 'value'),
               State('dis-nature-of-project-multiselect', 'value'),
-              State('dis-plot-status-multiselect', 'value')])
-def filter_data_for_dis_map(n, arearange, project_nature, plot_status):
+              State('dis-plot-status-multiselect', 'value'),
+              State('dis-pcb-category-multiselect', 'value')])
+def filter_data_for_dis_map(n, arearange, project_nature, plot_status, pcb_cat):
     if(n):
         
         plot_details_df = pd.read_csv(plot_details_admin_file)
+
+        plot_details_df_original = plot_details_df
         
         #Apply Area Range Filter
         plot_details_df['Geometric Area'] = [float(x) for x in plot_details_df['Geometric Area']]
@@ -1276,15 +1294,23 @@ def filter_data_for_dis_map(n, arearange, project_nature, plot_status):
         #Apply Plot Status Filter
         if(plot_status is not None):
             plot_details_df = plot_details_df[plot_details_df['Plot Status '].isin(plot_status)]
+
+        #Apply PCB Category Filter
+        if(pcb_cat is not None):
+            plot_details_df = plot_details_df[plot_details_df['PCB Category'].isin(pcb_cat)]
         
-        
-        fig = px.choropleth_mapbox(plot_details_df, geojson=dis_json, locations='UID', 
+        plot_details_df['selected'] = [1] * len(plot_details_df)
+
+        fig = px.choropleth_mapbox(plot_details_df_original, geojson=dis_json, locations='UID', 
                            color_continuous_scale="Viridis",
                            zoom=10, center = {"lat": 29.561, "lon": 78.663},
-                           opacity=0.8,
+                           opacity=0.6,
                            labels={'Plot Number':'Plot Number'},
                            hover_data = ['Plot Number', 'UID', 'Geometric Area', 'Nature of Project', 'Plot Status ']
                           )
+
+        fig.add_trace(go.Choroplethmapbox(geojson=dis_json, locations= plot_details_df['UID'], z = plot_details_df['selected'],colorscale="agsunset", 
+                                    marker_opacity=0.8, marker_line_width=2, showscale = False, name = 'Filtered'))
 
 
         fig.update_layout(
@@ -1369,7 +1395,7 @@ def dis_map_click(data_clicked):
                 details_table_body.append(html.Tr([html.Td(mini_df.columns[c], className = 'basic-details-table-header'), html.Td(str(mini_df[mini_df['UID'] == data_clicked['points'][0]['location']][mini_df.columns[c]].values[0]),className = 'basic-details-table-content')]))
         
             
-            return [dbc.Alert("{}".format(mini_df['UID'].values[0]), color="success", id = 'basic-details-header'),
+            return [dbc.Alert("{}".format(mini_df['Plot Number'].values[0]), color="success", id = 'basic-details-header'),
                     dbc.Table(details_table_body, bordered=True, id = 'dis-details-table')]
 
 
