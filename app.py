@@ -70,6 +70,10 @@ graphics_folder_path = os.path.join(cur_path, 'graphics')
 #Additional Data Layers folder
 addnl_data_layer = os.path.join(cur_path, 'additional_layers')
 
+#Uttarakhand District JSON
+with open(os.path.join(cur_path, 'json', 'uk_district.geojson')) as f:
+    z = json.load(f)
+
 # ## Setup for SMTP
 
 # In[3]:
@@ -260,7 +264,7 @@ legend_types_list = ['Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Li
 legend_overlay_div = html.Div([
 
     html.P('Layers', id = 'legend-layer-caption'),
-    html.Div(legend_div_contents, style = {'height':'150px', 'overflow-y':'auto'})
+    html.Div(legend_div_contents, style = {'height':'140px', 'overflow-y':'auto'})
 
 
     ] ,className = 'legend-overlay')
@@ -335,6 +339,30 @@ def load_basic_map(area, xyz, opac, KV11_val, KV33_val, Bridge_val, Compline_val
                         labels={'Plot_No':'Plot Number'},
                         hover_data = ['Plot_No', 'UID']
                         )
+    
+    #Add District Layer
+
+    dist_df = pd.DataFrame()
+    dist_df['id'] = [x['id'] for x in z['features']]
+
+    fig.add_trace(go.Choroplethmapbox(geojson=z, locations=dist_df.id, featureidkey = 'properties.dtname', z = dist_df.index,
+                                    colorscale="Viridis", showscale=False, name="",
+                                    marker_opacity=0, marker_line_width=2))
+
+    for feature in z['features']:
+        lats = []
+        lons = []
+        for cp in feature['geometry']['coordinates'][0]:
+            lats.append(cp[1])
+            lons.append(cp[0])
+            
+        fig.add_trace(go.Scattermapbox(
+                            lat=lats,
+                            lon=lons,
+                            mode="lines",
+                            hoverinfo='skip',
+                            line=dict(width=2, color="#000000")
+                        ))
 
     #Add Additional Layers
     addnl_layers_list = glob(os.path.join(addnl_data_layer, '*.csv'))
@@ -399,6 +427,16 @@ def load_basic_map(area, xyz, opac, KV11_val, KV33_val, Bridge_val, Compline_val
 
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     fig.update(layout_showlegend=False)
+
+    data_list = list(fig.data)
+
+    data_list_0 = data_list[0]
+    data_list_1 = data_list[1]
+
+    data_list[0] = data_list_1
+    data_list[1] = data_list_0
+
+    fig.data = tuple(data_list)
 
     return fig
 
