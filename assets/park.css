@@ -68,3 +68,25 @@
     font-weight: bold;
     border-radius: 5px;
 }
+
+#park-details-download-csv{
+    background-color: green;
+    color: white;
+    width: 45%;
+    display: inline-block;
+    border-radius: 5px;
+    margin: 5px;
+    margin-bottom: 20px;
+    font-size: small;
+}
+
+#park-details-download-pdf{
+    background-color: rgb(151, 43, 43);
+    color: white;
+    width: 45%;
+    display: inline-block;
+    border-radius: 5px;
+    margin: 5px;
+    margin-bottom: 20px;
+    font-size: small;
+}
