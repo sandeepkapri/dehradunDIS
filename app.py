@@ -74,9 +74,11 @@ addnl_data_layer = os.path.join(cur_path, 'additional_layers')
 with open(os.path.join(cur_path, 'json', 'uk_district.geojson')) as f:
     z = json.load(f)
 
-# ## Setup for SMTP
+#Park Names CSV
+park_names_position_path = os.path.join(cur_path, 'support_files', 'park_names_position.csv')
+park_details_csv_path = os.path.join(cur_path, 'support_files', 'park_details.csv')
 
-# In[3]:
+# ## Setup for SMTP
 
 
 port = 465  # For SSL
@@ -86,8 +88,6 @@ sender_email = "jjjhkrmntest@gmail.com"
 
 
 # ### Dash App Definition
-
-# In[4]:
 
 
 FONT_AWESOME = "https://use.fontawesome.com/releases/v5.7.2/css/all.css"
@@ -100,8 +100,6 @@ app.title = "Uttarakhand Industrial Information System"
 
 # ## Global Variables
 
-# In[5]:
-
 
 is_logged_in = False
 session_user_name = ''
@@ -112,8 +110,6 @@ user_info_dict = {'First Name': '',
 
 
 # ## App Layout
-
-# In[6]:
 
 
 header_elements = [
@@ -147,8 +143,6 @@ page_layout = html.Div([
 
 
 # ### Layout for Basic Web Map
-
-# In[7]:
 
 
 fig = px.choropleth_mapbox(df, geojson=dis_json, locations='id',
@@ -512,7 +506,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'warning', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'primary',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -529,7 +523,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'warning', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login"),
 
 
@@ -555,7 +549,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'warning', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'primary',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -572,7 +566,7 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'warning', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
                     
                     
@@ -717,7 +711,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'warning', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'primary',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -796,7 +790,7 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'warning', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
 
 
@@ -818,7 +812,7 @@ def display_page(pathname):
 
         return navigation_links, main_area
 
-    elif(pathname == "/about"):
+    elif(pathname == "/park"):
 
         if(is_logged_in):
 
@@ -827,7 +821,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'warning', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'warning', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'primary',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -844,22 +838,103 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'warning', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'warning', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
 
 
 
                 ], className = 'navlinkbuttongroup')
 
+        # Map in The Page
+
+        park_pos_df = pd.read_csv(park_names_position_path)
+
+        
+
+        dist_df = pd.DataFrame()
+        dist_df['id'] = [x['id'] for x in z['features']]
+
+        parkfig = go.Figure(data = go.Choroplethmapbox(geojson=z, locations=dist_df.id, featureidkey = 'properties.dtname', z = dist_df.index,
+                                        colorscale="Viridis", showscale=False, name="",
+                                        marker_opacity=0, marker_line_width=2))
+
+
+        for feature in z['features']:
+            lats = []
+            lons = []
+            for cp in feature['geometry']['coordinates'][0]:
+                lats.append(cp[1])
+                lons.append(cp[0])
+                
+            parkfig.add_trace(go.Scattermapbox(
+                                lat=lats,
+                                lon=lons,
+                                mode="lines",
+                                hoverinfo='skip',
+                                line=dict(width=2, color="#39FF14")
+                            ))
+
+        parkfig.add_trace(go.Scattermapbox(
+                    lat = park_pos_df['lat'],
+                    lon = park_pos_df['lon'],
+                    text = park_pos_df['name'],
+                    hoverinfo = 'text',
+                    showlegend=False,
+                    mode = 'markers',
+                    marker={'size': 15, 'color': 'red'}
+                ))
+
+        parkfig.update_layout(
+            mapbox_style="white-bg",
+            mapbox_layers=[
+                {
+                    "below": 'traces',
+                    "sourcetype": "raster",
+                    "sourceattribution": "Google, RBS Pvt. Ltd.",
+                    "source": [
+                        "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"
+                    ]
+                }
+            ],
+            mapbox = {'center': {'lat': 29.7, 'lon': 78.8}, 'zoom': 8})
+
+        parkfig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+        parkfig.update(layout_showlegend=False)
+
+        park_basemap_overlay = html.Div([
+                                            html.Span(id='park-basemap-overlay-circle'),
+                                            html.P("Park", id = 'park-basemap-overlay-park'),
+                                            html.P('Basemap', id = 'park-basemap-overlay-caption'),
+                                            dbc.Select(id = 'park-basemap-overlay-dropdown', options = basemap_list_dict, value = "http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}"),
+            
+                                        ],id = 'park-basemap-overlay')
+
+
+        parkmapfig = [park_basemap_overlay, dcc.Graph(figure = parkfig, style = {'height': '100%'}, id = 'park-display-map')]
+
+        #Details Panel
+
+        analysis_graphic = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAACAASURBVHic7N11mFzl3f/x98zarEvc3YhCgkRIgjuFtrS4SwWnhaeGtNAf+rRQ2gdCcbfilKKB4AmahBDiQnbj674zvz9OUgIkWbnvM0fm87quvUhL5nu+JLtzPnOfW0BERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERES+K+J1AyI+FgP6Av2BrkAnoGTLP7d+dQYKt/z+dCB/y6+zgJwtv64BGrf8evOWfzYB1cAmYAOw8Ttf64FVwHKg3vJ/l4iIAoCkvAJgJDAaGAj02/LVH+jhXVvfUgoswwkDW//5JTAXqPCsKxEJNAUASRURYDgwDudmPxoYhXOjD7LlOEFgLvDZln9+BbR42JOIBIACgIRVLrArMBmYAuyFM1yfCqpxwsDbwDvALKDc045ExHcUACQscoFpwEFb/jkKSPO0I/9oBj7FCQOvAa/jzEsQkRSmACBBNhDYHzhiyz9j3rYTGM3AB8BzwKvAx0DC045ERER2Ih3nRn8bsAbnpqUv86/lW/5MD0CjJiIi4hNpOM/wbwbK8P5mGfavjcB9OKMq6W34+xEREbFqCvBPnBuS1zfFVP0qBf6GM5FSRETENSXA2Tgz2L2++enr219fApcBXXb4tyciItIOacDhwFM4u+V5faPT186/6oGHgX3RJGIREemAQuBinJ3tvL6p6atjX4uAC/lm+2MREZEdGgBci7Mnvtc3MH3Z+arAmaTZBxERke+YAjyJs0Wt1zcsfbnz1QDcA4xBRERS3hSc3ee8vjnpK3lfceAFYAIiIpJyJuLsNOf1zUhf3n69AuyGiPiOZvGKbZOAK3F2lQu8WE6ULt0zKChOp6AknYKiNPKL0ykqSSe/KI38onTS0yPk5EUhAlmxKOkZEaLRCNm5UQAa6+M0NSUAqKuJE48naGpMUF3RQk1VC9UVLVRXOl+Vm5vZvL6ZDWub2FDaSFNjwsv/fFviwOPAVcACj3sRkS0UAMSWwcB1wA+9bqS90jMi9OibRffe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'
+
+        details_content = [
+            dbc.CardHeader("Details"),
+            dbc.CardBody(
+                [
+                    html.Img(src = analysis_graphic, className = 'details-logo'),
+                    dbc.Alert("Click on any plot to see its details.", color="primary", style = {'border-radius': '5px'})
+                ], id = 'park-details-cardbody'
+            ),
+        ]
+
+
+        park_details_div = html.Div([dbc.Card(details_content, color="dark", inverse=True, style = {'height': '100%'})],id = 'park-basic-webmap')
+
+        
+
+
         main_area = [
-                dbc.Col([
-
-                    html.H2('Page is Under Construction', className = 'text404'),
-                    html.P('The page you are looking for is under construction.', className = 'desc404'),
-                    html.Div(html.Img(src = "https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif", className = 'image404'), className = 'box404'),
-
-
-                ], width = 12),
+                dbc.Col(parkmapfig, width = 10, className = 'park-map'),
+                dbc.Col(park_details_div, width = 2, className = 'park-details')
             ]
 
         return navigation_links, main_area
@@ -872,7 +947,7 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'warning', className = 'navlinkbutton-end', href = "/login")
 
             ], className = 'navlinkbuttongroup')
@@ -927,7 +1002,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login"),
 
 
@@ -960,7 +1035,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'primary',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -1050,7 +1125,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login"),
 
 
@@ -1082,7 +1157,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'warning',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -1117,7 +1192,7 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
 
 
@@ -1148,7 +1223,7 @@ def display_page(pathname):
                     dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                     dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                     dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                    dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                    dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                     dbc.Button(html.P(session_user_name, className = "col-12 text-truncate"), color = 'warning',
                                className = 'navlinkbutton', href = "/userinfo", id='username'),
                     dbc.Button([html.I(className = 'fas fa-sign-out-alt', style = {'margin-right': '5px'}), 'Logout'], color = 'danger',
@@ -1167,7 +1242,7 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
 
 
@@ -1201,7 +1276,7 @@ def display_page(pathname):
                 dbc.Button('Basic Web Map', color = 'secondary', className = 'navlinkbutton-start', href = '/'),
                 dbc.Button('DIS Query', color = 'secondary', className = 'navlinkbutton', href = '/dis'),
                 dbc.Button('Administrator', color = 'secondary', className = 'navlinkbutton', href = '/admin'),
-                dbc.Button('About', color = 'secondary', className = 'navlinkbutton', href = "/about"),
+                dbc.Button('Park Details', color = 'secondary', className = 'navlinkbutton', href = "/park"),
                 dbc.Button('Login', color = 'success', className = 'navlinkbutton-end', href = "/login")
 
             ], className = 'navlinkbuttongroup')
@@ -1621,12 +1696,97 @@ def admin_save_changes(n, rows, columns, is_open):
         return True
 
 
-# In[ ]:
+#Callbacks for Park Page
+@app.callback(Output('park-display-map', 'figure'), [Input('park-basemap-overlay-dropdown', 'value')])
+def change_park_map_acoording_to_basemap(basemap):
+    park_pos_df = pd.read_csv(park_names_position_path)
+
+    dist_df = pd.DataFrame()
+    dist_df['id'] = [x['id'] for x in z['features']]
+
+    parkfig = go.Figure(data = go.Choroplethmapbox(geojson=z, locations=dist_df.id, featureidkey = 'properties.dtname', z = dist_df.index,
+                                    colorscale="Viridis", showscale=False, name="",
+                                    marker_opacity=0, marker_line_width=2))
+
+
+    for feature in z['features']:
+        lats = []
+        lons = []
+        for cp in feature['geometry']['coordinates'][0]:
+            lats.append(cp[1])
+            lons.append(cp[0])
+            
+        parkfig.add_trace(go.Scattermapbox(
+                            lat=lats,
+                            lon=lons,
+                            mode="lines",
+                            hoverinfo='skip',
+                            line=dict(width=2, color="#39FF14")
+                        ))
+
+    parkfig.add_trace(go.Scattermapbox(
+                lat = park_pos_df['lat'],
+                lon = park_pos_df['lon'],
+                text = park_pos_df['name'],
+                hoverinfo = 'text',
+                showlegend=False,
+                mode = 'markers',
+                marker={'size': 15, 'color': 'red'}
+            ))
+
+    parkfig.update_layout(
+        mapbox_style="white-bg",
+        mapbox_layers=[
+            {
+                "below": 'traces',
+                "sourcetype": "raster",
+                "sourceattribution": "Google, RBS Pvt. Ltd.",
+                "source": [
+                   basemap
+                ]
+            }
+        ],
+        mapbox = {'center': {'lat': 29.7, 'lon': 78.8}, 'zoom': 8})
+
+    parkfig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    parkfig.update(layout_showlegend=False)
+
+    return parkfig
+
+@app.callback(Output('park-details-cardbody', 'children'), [Input('park-display-map', 'clickData')])
+def get_park_data_to_details_panel(data_clicked):
+
+    if(data_clicked == None):
+        return [html.Img(src = analysis_graphic, className = 'details-logo'),
+                dbc.Alert("Click on any park to see its details.", color="primary", style = {'border-radius': '5px'})]
+    else:
+
+        print(data_clicked)
+
+        park_details_df = pd.read_csv(park_details_csv_path)
+
+        mini_df = park_details_df[park_details_df['Industrial Estate Name'] == data_clicked['points'][0]['text']].dropna(axis='columns')
+
+
+        if(len(mini_df) == 0):
+            return [dbc.Alert("{}".format(data_clicked['points'][0]['text']), color="success", id = 'details-caption-alert'),
+                    dbc.Alert("No records found for the selected park.", color="primary", style = {'border-radius': '5px'}),
+                    ]
+        else:
+
+            details_table_body = []
+
+            for c in range(len(mini_df.columns)):
+
+                details_table_body.append(html.Tr([html.Td(mini_df.columns[c], className = 'basic-details-table-header'), html.Td(str(mini_df[mini_df['Industrial Estate Name'] == data_clicked['points'][0]['text']][mini_df.columns[c]].values[0]),className = 'basic-details-table-content')]))
+
+
+            return [dbc.Alert("{}".format(mini_df['Industrial Estate Name'].values[0]), color="success", id = 'details-caption-alert'),
+                    dbc.Table(details_table_body, bordered=True, id = 'basic-details-table')]
+
 
 
 
 if __name__ == "__main__":
     app.run_server()
 
-
-# In[ ]:
