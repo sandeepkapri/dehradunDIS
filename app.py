@@ -151,13 +151,69 @@ page_layout = html.Div([
 
 fig = px.choropleth_mapbox(df, geojson=dis_json, locations='id',
                            color_continuous_scale="Viridis",
-                           zoom=10, center = {"lat": 29.561, "lon": 78.663},
+                           zoom=7.2, center = {"lat": 29.95, "lon": 78.963},
                            opacity=0.5,
                            labels={'Plot_No':'Plot Number'},
                            hover_data = ['Plot_No', 'UID']
                           )
 
+dist_df = pd.DataFrame()
+dist_df['id'] = [x['id'] for x in z['features']]
 
+fig.add_trace(go.Choroplethmapbox(geojson=z, locations=dist_df.id, featureidkey = 'properties.dtname', z = dist_df.index,
+                                colorscale="Viridis", showscale=False, name="",
+                                marker_opacity=0, marker_line_width=2))
+
+for feature in z['features']:
+    lats = []
+    lons = []
+    for cp in feature['geometry']['coordinates'][0]:
+        lats.append(cp[1])
+        lons.append(cp[0])
+        
+    fig.add_trace(go.Scattermapbox(
+                        lat=lats,
+                        lon=lons,
+                        mode="lines",
+                        hoverinfo='skip',
+                        line=dict(width=2, color="#00fffb")
+                    ))
+
+#Add Additional Layers
+addnl_layers_list = glob(os.path.join(addnl_data_layer, '*.csv'))
+
+for addnl_f in addnl_layers_list:
+    fname = os.path.split(addnl_f)[1][:-4]
+    l_type = fname.split('_')[0]
+    l_name = fname.split('_')[1]
+    l_color = fname.split('_')[2]
+
+    addnl_layers_df = pd.read_csv(addnl_f)
+
+    if(l_type == 'Line'):
+
+        fig.add_trace(go.Scattermapbox(
+            lat=addnl_layers_df['lat'],
+            lon=addnl_layers_df['lon'],
+            mode="lines",
+            text=addnl_layers_df['name'],
+            hoverinfo = 'text',
+            showlegend=False,
+            line=dict(width=2, color=l_color)
+        ))
+
+    elif(l_type == 'Point'):
+
+       
+
+        fig.add_trace(go.Scattermapbox(
+            lat=addnl_layers_df['lat'],
+            lon=addnl_layers_df['lon'],
+            text=addnl_layers_df['name'],
+            hoverinfo = 'text',
+            showlegend=False,
+            line=dict(width=2, color=l_color)
+        ))
 
 fig.update_layout(
     mapbox_style="white-bg",
@@ -259,21 +315,44 @@ legend_types_list = ['Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Line', 'Li
 
 
 
-legend_overlay_div = html.Div([
+legend_overlay_div = html.Div(dbc.Collapse([
 
     html.P('Layers', id = 'legend-layer-caption'),
-    html.Div(legend_div_contents, style = {'height':'140px', 'overflow-y':'auto'})
+    html.Div(legend_div_contents, style = {'height':'350px', 'overflow-y':'auto'})
 
 
-    ] ,className = 'legend-overlay')
+    ] ,id = 'legend-overlay-collapse'), className = 'legend-overlay')
 
+
+#-----------------------------------------------------------------------------------------------------------------------------------------
+
+#----------------Layers Overlay-----------------------------------------------------------------------------------------------------------
+
+layer_overlay_div = html.Div([
+        dbc.Button(
+            html.I(className = 'fas fa-layer-group'),
+            id="layer-collapse-button",
+            color="dark",
+        ),
+        dbc.Tooltip('Layers', target = "layer-collapse-button", placement = 'top')
+    ], id = 'layer-overlay-div')
 
 #----------------------------------------------------------------------------------------
 
 
 
 
-mapfig = html.Div([search_overlay_div, settings_overlay_div, legend_overlay_div, settings_overlay_div_expanded, dcc.Graph(figure = fig, style = {'height': '100%'}, id = 'basic-map')], className = 'map-first-page')
+mapfig = html.Div([search_overlay_div, settings_overlay_div, legend_overlay_div, settings_overlay_div_expanded, layer_overlay_div, dcc.Graph(figure = fig, style = {'height': '100%'}, id = 'basic-map')], className = 'map-first-page')
+
+@app.callback(
+    Output("legend-overlay-collapse", "is_open"),
+    [Input("layer-collapse-button", "n_clicks")],
+    [State("legend-overlay-collapse", "is_open")],
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 @app.callback(
     Output("settings-exp", "is_open"),
@@ -359,7 +438,7 @@ def load_basic_map(area, xyz, opac, KV11_val, KV33_val, Bridge_val, Compline_val
                             lon=lons,
                             mode="lines",
                             hoverinfo='skip',
-                            line=dict(width=2, color="#000000")
+                            line=dict(width=2, color="#00fffb")
                         ))
 
     #Add Additional Layers
@@ -601,7 +680,7 @@ def display_page(pathname):
                             }
                         ),
 
-                    
+                    html.P(id='area-min-max-viewer'),
 
                     html.P('Nature of Project', className = 'dis-control-labels'),
 
@@ -1361,7 +1440,10 @@ def toggle_modal(n1, rows, columns, is_open):
 
 # ## Callbacks for DIS Page
 
-
+#Callback to Display Min and Max value of the Area Range Slider
+@app.callback(Output('area-min-max-viewer', 'children'), [Input('dis-area-range-slider', 'value')])
+def show_min_max_area(v):
+    return "Range: ({} to {})".format(round(float(v[0])/1000000,3), round(float(v[1])/1000000,3))
 
 #Callback to filter data
 @app.callback(Output('dis-panel-2-card-body', 'children'),

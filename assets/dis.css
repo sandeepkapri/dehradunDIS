@@ -75,3 +75,12 @@
 #dis-details-table{
   font-size: small;
 }
+
+#area-min-max-viewer{
+  font-size: small;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  text-align: center;
+  background-color: red;
+}
